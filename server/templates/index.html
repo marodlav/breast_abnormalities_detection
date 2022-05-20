@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detección masas cancerígenas en mamografías</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="container py-5">
+      <!-- For demo purpose -->
+      <header class="text-white text-center">
+        <h1 class="display-4">
+          Detección de masas cancerígenas en mamografías
+        </h1>
+        <p class="lead mb-0">Sube una imagen y la analizamos en tiempo real!</p>
+        <p class="mb-5 font-weight-light">
+          Creado por Mateo Rodríguez Lavado
+          <a href="#" class="text-white">
+            <u><em class="fa fa-github ml-2"></em></u>
+          </a>
+        </p>
+        <div class="image-area mt-4">
+          <img
+            id="imageResult"
+            src="https://bootstrapious.com/i/snippets/sn-img-upload/image.svg"
+            alt=""
+            class="img-fluid rounded shadow-sm mx-auto d-block"
+          />
+        </div>
+      </header>
+
+      <div class="row py-4">
+        <div class="col-lg-6 mx-auto">
+          <!-- Upload image input-->
+          <div
+            id="upload_image_container"
+            class="input-group mb-3 px-2 py-2 rounded-pill bg-white shadow-sm"
+          >
+            <input
+              id="upload"
+              type="file"
+              onchange="readURL(this);"
+              class="form-control border-0"
+            />
+            <label
+              id="upload-label"
+              for="upload"
+              class="font-weight-light text-muted"
+              >Elige imagen</label
+            >
+            <div class="input-group-append">
+              <label for="upload" class="btn btn-light m-0 rounded-pill px-4">
+                <em class="fa fa-cloud-upload mr-2 text-muted"></em
+                ><small class="text-uppercase font-weight-bold text-muted"
+                  >Elige imagen</small
+                ></label
+              >
+            </div>
+          </div>
+
+          <!-- Loading spinner for responses-->
+          <div class="d-flex justify-content-center">
+            <div
+              class="spinner-border text-light"
+              id="loader_spiner"
+              style="display: none"
+              role="status"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          <!-- Alert for response errors-->
+          <div
+            id="alert_banner"
+            class="alert alert-danger"
+            role="alert"
+            style="display: none"
+          >
+            Error
+          </div>
+          <!-- Button for upload file-->
+          <div class="row py-4">
+            <div class="col-lg-6 mx-auto">
+              <button
+                id="submit_button"
+                type="button"
+                class="btn btn-info rounded-pill btn-lg btn-block"
+              >
+                <em class="fa fa-search mr-2"></em> Analizar
+              </button>
+            </div>
+          </div>
+          <!-- Button for download file-->
+          <div class="row py-4">
+            <div class="col-lg-6 mx-auto">
+              <a id="download_link" download="result.png" href="#">
+                <button
+                  id="download_button"
+                  type="button"
+                  style="display: none"
+                  class="btn btn-primary rounded-pill btn-lg btn-block"
+                >
+                  <em class="fa fa-download mr-2"></em> Descargar
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      src =
+        "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js";
+    </script>
+    <script>
+      /*  ==========================================
+          SHOW UPLOADED IMAGE AND UPLOAD IT 
+        * ========================================== */
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            $("#imageResult").attr("src", e.target.result);
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      $(function () {
+        $("#upload").on("change", function () {
+          $("#alert_banner").hide();
+          readURL(input);
+        });
+      });
+
+      $(document).ready(function (e) {
+        var base_url = "http://127.0.0.1:5000";
+        $("#submit_button").on("click", function () {
+          $("#alert_banner").hide();
+          $("#loader_spiner").show();
+          var file_data = $("#upload").prop("files")[0];
+          var form_data = new FormData();
+          form_data.append("file", file_data);
+          $.ajax({
+            url: base_url + "/upload",
+            dataType: "text",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: "post",
+            success: function (response) {
+              $("#imageResult").prop("src", response);
+              $("#download_link").prop("href", response);
+              $("#loader_spiner").hide();
+              $("#upload_image_container").hide();
+              $("#submit_button").hide();
+              $("#download_button").show();
+            },
+            error: function (response) {
+              $("#alert_banner").html(response.responseText);
+              $("#loader_spiner").hide();
+              $("#alert_banner").show();
+            },
+          });
+        });
+      });
+
+      /*  ==========================================
+          SHOW UPLOADED IMAGE NAME
+        * ========================================== */
+      var input = document.getElementById("upload");
+      var infoArea = document.getElementById("upload-label");
+
+      input.addEventListener("change", showFileName);
+      function showFileName(event) {
+        var input = event.srcElement;
+        var fileName = input.files[0].name;
+        infoArea.textContent = "File name: " + fileName;
+      }
+    </script>
+    <style>
+      /*
+        *
+        * ==========================================
+        * CUSTOM UTIL CLASSES
+        * ==========================================
+        *
+        */
+      #upload {
+        opacity: 0;
+      }
+
+      a:visited, a:hover, a:active, a:focus {
+        text-decoration: none !important;
+        outline: none !important;
+      }
+
+      #upload-label {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+      }
+
+      .image-area {
+        border: 2px dashed rgba(255, 255, 255, 0.7);
+        padding: 1rem;
+        position: relative;
+      }
+
+      .image-area::before {
+        color: #fff;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.8rem;
+        z-index: 1;
+      }
+
+      .image-area img {
+        z-index: 2;
+        position: relative;
+      }
+
+      /*
+        *
+        * ==========================================
+        * FOR DEMO PURPOSES
+        * ==========================================
+        *
+        */
+      body {
+        min-height: 100vh;
+        background-color: #757f9a;
+        background-image: linear-gradient(147deg, #757f9a 0%, #d7dde8 100%);
+      }
+
+      /*
+    </style>
+  </body>
+</html>
