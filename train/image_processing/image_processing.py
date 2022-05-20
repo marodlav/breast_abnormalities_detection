@@ -6,8 +6,6 @@ import cv2
 import numpy as np
 from skimage.util import img_as_ubyte
 
-target_dir = "Resize640"
-
 
 def cropImage(img):
     width, height = img.size   # Get dimensions
