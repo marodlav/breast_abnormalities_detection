@@ -1,4 +1,3 @@
-from matplotlib import pyplot as plt
 import torch
 import cv2
 import os

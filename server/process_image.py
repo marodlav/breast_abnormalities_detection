@@ -1,10 +1,9 @@
-import os
 import pydicom as dicom
 import cv2
 import numpy as np
 from skimage.util import img_as_ubyte
 import numpy as np
-from aux_functions.aux_functions import change_extension, delete_file, get_extension
+from aux_functions.aux_functions import change_extension, get_extension
 
 
 def change_to_png(upload_file_path):
@@ -12,7 +11,6 @@ def change_to_png(upload_file_path):
     new_file_path = change_extension(upload_file_path)
 
     cv2.imwrite(new_file_path, dicom_img)
-    #delete_file(upload_file_path)
 
     img = cv2.imread(new_file_path)
 
