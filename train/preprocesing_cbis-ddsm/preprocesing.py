@@ -10,19 +10,19 @@ from pathlib import Path
 def get_new_name(old_path):
     try:
         image = dicom.dcmread(old_path)
-        patient_id = image.PatientID.replace(constants.dcm_extension, "")
+        patient_id = image.PatientID.replace(constants.DCM_EXTENSION, "")
         if patient_id[0] == 'P':  # Some test patiend_id haven't this prefix
             patient_id = "Calc-Test_" + patient_id
 
         # If the word "full" is in the path, it means that it's the complete mammography
         if "full" in old_path:
-            new_name = patient_id + "_FULL" + constants.png_extension
+            new_name = patient_id + "_FULL" + constants.PNG_EXTENSION
         else:
             # Mask images only have two colors
             image_arr = image.pixel_array
             num_colors = len(np.unique(image_arr).tolist())
             if num_colors == 2:
-                new_name = patient_id + "_MASK" + constants.png_extension
+                new_name = patient_id + "_MASK" + constants.PNG_EXTENSION
             else:
                 # Discard crop images
                 new_name = "discard"
@@ -55,11 +55,11 @@ def main_preprocesing(dir="", new_dir=""):
         dir = os.getcwd()
     if new_dir == "":
         new_dir = os.path.join(os.path.dirname(
-            dir), constants.preprocessing_png_dir)
+            dir), constants.PREPROCESSING_PNG_DIR)
 
     for (curdir, _, files) in os.walk(dir, topdown=False):
         for f in files:
-            if f.endswith(constants.dcm_extension):
+            if f.endswith(constants.DCM_EXTENSION):
                 old_name_path = os.path.join(curdir, f)
                 new_name = get_new_name(old_name_path)
                 if new_name != "discard":

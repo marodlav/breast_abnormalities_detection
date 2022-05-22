@@ -1,0 +1,6 @@
+image_results/
+image_iploads/
+*.png
+*dcm
+__pycache__/
+ultralytics_yolov5_master/

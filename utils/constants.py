@@ -1,3 +1,3 @@
-dcm_extension = ".dcm"
-png_extension = ".png"
-preprocessing_png_dir = "files"
+DCM_EXTENSION = ".dcm"
+PNG_EXTENSION = ".png"
+PREPROCESSING_PNG_DIR = "files"

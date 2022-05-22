@@ -1,27 +1,29 @@
 import base64
 import mimetypes
 import os
-import platform
-import subprocess
 import time
+
 import flask
 import errors
 from werkzeug.utils import secure_filename
+from process_image import process
+from detect.detect import run
+from aux_functions.aux_functions import change_extension, delete_file, get_extension
 
-UPLOAD_FOLDER = './image_uploads'
-RESULT_FOLDER = './image_results'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__),"image_uploads")
+RESULT_FOLDER = os.path.join(os.path.dirname(__file__),"image_results")
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "dcm"}
 
 # APP SERVER
 app = flask.Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['RESULT_FOLDER'] = RESULT_FOLDER
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["RESULT_FOLDER"] = RESULT_FOLDER
 
 
 def allowed_file(filename):
     # Check for allowed file extension on uploaded image
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return "." in filename and \
+           filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def generate_filemame(_file):
@@ -35,19 +37,10 @@ def generate_filemame(_file):
 def save_file(file):
     # Save file on UPLOADS folder and provide the paths for files
     file_name = generate_filemame(file)
-    upload_file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    upload_file_path = os.path.join(app.config["UPLOAD_FOLDER"], file_name)
     file.save(upload_file_path)
-    result_file_path = os.path.join(app.config['RESULT_FOLDER'], file_name)
+    result_file_path = os.path.join(app.config["RESULT_FOLDER"], file_name)
     return upload_file_path, result_file_path
-
-
-def delete_file(path):
-    # Delete uploaded and resulted file
-    try:
-        if os.path.exists(path):
-            os.remove(path)
-    except OSError as e:
-        print(errors.ERROR_DELETING_FILE, e)
 
 
 def encode_result_file(result_file_path):
@@ -56,10 +49,10 @@ def encode_result_file(result_file_path):
     if (os.path.exists(result_file_path)):
         try:
             file_mimetype = mimetypes.guess_type(result_file_path)[0]
-            result_file = open(result_file_path, 'rb')
+            result_file = open(result_file_path, "rb")
             encoded_image = base64.b64encode(result_file.read())
-            image_src = 'data:' + file_mimetype + \
-                ';base64,' + encoded_image.decode('utf8')
+            image_src = "data:" + file_mimetype + \
+                ";base64," + encoded_image.decode("utf8")
             return image_src
         except Exception as e:
             print(errors.ERROR_FILE_ENCODING, e)
@@ -71,31 +64,30 @@ def encode_result_file(result_file_path):
 
 def process_image(upload_file_path, result_file_path):
     # PLACE HERE THE CODE EXCUTION FOR YOLOV DETECTION
-    # The result image need to be storage on the 'results' folder
+    # The result image need to be storage on the "results" folder
     # In the meantime, we use a subprocess call to copy the uploaded image
     # to the results folder with the same name and extension
+    
+    if get_extension(upload_file_path) == "dcm":
+        result_file_path = change_extension(result_file_path)
 
-    if platform.system() == 'Windows':
-        exit_code = subprocess.call(
-            'copy ' + upload_file_path + ' ' + result_file_path, shell=True)
-    else:
-        exit_code = subprocess.call(
-            'cp ' + upload_file_path + ' ' + result_file_path, shell=True)
-    time.sleep(3)
-    return exit_code
+    process_img, pad_original_image, img_original_shape = process(upload_file_path)
+    exit_code = run(process_img, result_file_path, pad_original_image, img_original_shape)
+
+    return exit_code, result_file_path
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return flask.render_template('index.html')
+    return flask.render_template("index.html")
 
 
-@app.route('/upload', methods=['POST'])
+@app.route("/upload", methods=["POST"])
 def upload_file():
-    if 'file' not in flask.request.files:
+    if "file" not in flask.request.files:
         return errors.ERROR_NOT_FILE_UPLOAD, 400
-    file = flask.request.files['file']
-    if file.filename == '':
+    file = flask.request.files["file"]
+    if file.filename == "":
         return errors.ERROR_NOT_FILE_UPLOAD, 400
     if not allowed_file(file.filename):
         return errors.ERROR_EXTENSION_NOT_ALLOWED, 400
@@ -112,9 +104,9 @@ def upload_file():
             delete_file(result_file_path)
         return response
 
-    ################# YOLOV MAGIG ####################################
+    ################# YOLOV5 MAGIG ####################################
 
-    exit_code = process_image(upload_file_path, result_file_path)
+    exit_code, result_file_path = process_image(upload_file_path, result_file_path)
     if exit_code != 0:  # Exit with code ! = 0 means error on command exectuion
         print(errors.ERROR_PROCESSING)
         return errors.ERROR_PROCESSING, 400
