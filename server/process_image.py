@@ -1,3 +1,4 @@
+
 import pydicom as dicom
 import cv2
 import numpy as np
@@ -40,8 +41,8 @@ def normalizate_image(img_array):
 
 def check_rigth_or_left(img):
     hsv_image = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    lower = np.array([0, 0, 150])
-    upper = np.array([150, 255, 255])
+    lower = np.array([0, 0, 100])
+    upper = np.array([100, 255, 255])
     mask = cv2.inRange(hsv_image, lower, upper)
 
     x, y, w, h = 0, 0, img.shape[1]//2, img.shape[0]

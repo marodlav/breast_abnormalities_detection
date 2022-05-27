@@ -165,7 +165,8 @@ def resizeImages(dir="", dest_dir=""):
             image_dir = os.path.join(curdir, f)
             image = Image.open(image_dir)
             cropped_image = cropImage(image)
-            new_image = cropped_image.resize((320, 640))  # Divisible by 32
+            #new_image = cropped_image.resize((320, 640))  # Divisible by 32
+            new_image = cropped_image.resize((640, 1280))  # Divisible by 32
             pad_image = padding_image(new_image, curdir, f)
             write_image(pad_image, new_dir, f)
             removeNoise(os.path.join(new_dir, f))
@@ -264,8 +265,9 @@ def rotate_90(curdir, aug_file):
 
 
 def augmentation(dir):
+    mass = "Mass"
     train = "Train"
-    dir_images = os.path.join(dir, train)
+    dir_images = os.path.join(os.path.join(dir, mass),train)
     for (curdir, _, files) in os.walk(dir_images, topdown=False):
         full_files = [f for f in files if "FULL" in f]
         mask_files = [m for m in files if "MASK" in m]
