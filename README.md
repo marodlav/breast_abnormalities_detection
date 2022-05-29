@@ -6,7 +6,7 @@ Para la detección de anomalías se utiliza la red YOLOv5, a la que ayudamos a u
 
 Este proyecto puede servir como base para generar una inteligencia artificial accesible y gratuita que ayude en la lucha contra el cancer de mama. A continuación, se detalla la estructura del repositorio.
 
-* server: contiene todos los archivos que forman parte de la aplicación web que se aloja en un servidor
+* <code>server</code>: contiene todos los archivos que forman parte de la aplicación web que se aloja en un servidor
 * train: contiene todos los ficheros necesarios para realizar el entrenamiento de los datos.
   * documents: aquí se encuentra tanto el archivo de configuración para YOLOv5 como los archivos de hiperparámetros usados durante las distintas pruebas realizadas en la etapa de entrenamiento.
 * utils: contiene un fichero _constants.py_ con constantes que se utilizan en el proyecto.
