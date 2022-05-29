@@ -5,152 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Detección masas cancerígenas en mamografías</title>
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
     />
     <link
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
       rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     />
   </head>
 
   <body>
-    <div class="container py-5">
+    <div class="py-4">
       <!-- For demo purpose -->
       <header class="text-white text-center">
-        <h1 class="display-4">
+        <h1 class="display-5">
           Detección de masas cancerígenas en mamografías
         </h1>
         <p class="lead mb-0">Sube una imagen y la analizamos en tiempo real!</p>
         <p class="mb-5 font-weight-light">
           Creado por Mateo Rodríguez Lavado
-          <a href="https://github.com/marodlav/breast_abnormalities_detection" class="text-white">
+          <a
+            href="https://github.com/marodlav/breast_abnormalities_detection"
+            class="text-white"
+          >
             <u><em class="fa fa-github ml-2"></em></u>
           </a>
         </p>
-        <div class="image-area mt-4">
-          <img
-            id="imageResult"
-            src="https://bootstrapious.com/i/snippets/sn-img-upload/image.svg"
-            alt=""
-            class="img-fluid rounded shadow-sm mx-auto d-block"
-          />
-        </div>
-      </header>
 
-      <div class="row py-4">
-        <div class="col-lg-6 mx-auto">
-          <!-- Upload image input-->
-          <div
-            id="upload_image_container"
-            class="input-group mb-3 px-2 py-2 rounded-pill bg-white shadow-sm"
-          >
-            <input
-              id="upload"
-              type="file"
-              onchange="readURL(this);"
-              class="form-control border-0"
-            />
-            <label
-              id="upload-label"
-              for="upload"
-              class="font-weight-light text-muted"
-              >Elige imagen</label
-            >
-            <div class="input-group-append">
-              <label for="upload" class="btn btn-light m-0 rounded-pill px-4">
-                <em class="fa fa-cloud-upload mr-2 text-muted"></em
-                ><small class="text-uppercase font-weight-bold text-muted"
-                  >Elige imagen</small
-                ></label
-              >
+        <div class="row">
+          <div class="col-md-6">
+            <div class="image-area mx-4 mt-4">
+              <div id="dwv">
+                <!-- Layer Container -->
+                <div id="layerGroup0" class="layerGroup"></div>
+              </div>
             </div>
           </div>
-
-          <!-- Loading spinner for responses-->
-          <div class="d-flex justify-content-center">
-            <div
-              class="spinner-border text-light"
-              id="loader_spiner"
-              style="display: none"
-              role="status"
-            >
-              <span class="sr-only">Loading...</span>
-            </div>
-          </div>
-          <!-- Alert for response errors-->
-          <div
-            id="alert_banner"
-            class="alert alert-danger"
-            role="alert"
-            style="display: none"
-          >
-            Error
-          </div>
-          <!-- Button for upload file-->
-          <div class="row py-4">
-            <div class="col-lg-6 mx-auto">
-              <button
-                id="submit_button"
-                type="button"
-                class="btn btn-info rounded-pill btn-lg btn-block"
-              >
-                <em class="fa fa-search mr-2"></em> Analizar
-              </button>
-            </div>
-          </div>
-          <!-- Button for download file-->
-          <div class="row py-4">
-            <div class="col-lg-6 mx-auto">
-              <a id="download_link" download="result.png" href="#">
-                <button
-                  id="download_button"
-                  type="button"
-                  style="display: none"
-                  class="btn btn-primary rounded-pill btn-lg btn-block"
+          <div class="col-md-6">
+            <div class="row py-4" style="height: 100%">
+              <div class="col-lg-6 align-self-center mx-auto">
+                <!-- Upload image input-->
+                <div
+                  id="upload_image_container"
+                  class="input-group mb-3 px-2 py-2 rounded-pill bg-white shadow-sm"
                 >
-                  <em class="fa fa-download mr-2"></em> Descargar
-                </button>
-              </a>
+                  <input
+                    id="upload"
+                    type="file"
+                    class="form-control border-0"
+                  />
+                  <label
+                    id="upload-label"
+                    for="upload"
+                    class="font-weight-light text-muted"
+                    >Elige imagen</label
+                  >
+                  <div class="input-group-append">
+                    <label
+                      for="upload"
+                      class="btn btn-light m-0 rounded-pill px-4"
+                    >
+                      <em class="fa fa-cloud-upload mr-2 text-muted"></em
+                      ><small class="text-uppercase font-weight-bold text-muted"
+                        >Elige imagen</small
+                      ></label
+                    >
+                  </div>
+                </div>
+
+                <!-- Loading spinner for responses-->
+                <div class="d-flex justify-content-center">
+                  <div
+                    class="spinner-border text-light"
+                    id="loader_spiner"
+                    style="display: none"
+                    role="status"
+                  >
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </div>
+                <!-- Alert for response errors-->
+                <div
+                  id="alert_banner"
+                  class="alert alert-danger"
+                  role="alert"
+                  style="display: none"
+                >
+                  Error
+                </div>
+                <!-- Button for upload file-->
+                <div class="row py-4">
+                  <div class="col-lg-6 mx-auto">
+                    <button
+                      id="submit_button"
+                      type="button"
+                      class="btn btn-info rounded-pill btn-lg btn-block"
+                    >
+                      <em class="fa fa-search mr-2"></em> Analizar
+                    </button>
+                  </div>
+                </div>
+                <!-- Button for download file-->
+                <div class="row py-4">
+                  <div class="col-lg-6 mx-auto">
+                    <a id="download_link" download="result.png" href="#">
+                      <button
+                        id="download_button"
+                        type="button"
+                        style="display: none"
+                        class="btn btn-primary rounded-pill btn-lg btn-block"
+                      >
+                        <em class="fa fa-download mr-2"></em> Descargar
+                      </button>
+                    </a>
+                  </div>
+                </div>
+                <div class="row py-4">
+                  <div class="col-lg-6 mx-auto">
+                    <button
+                      id="refresh_button"
+                      type="button"
+                      style="display: none"
+                      class="btn btn-success rounded-pill btn-lg btn-block"
+                    >
+                      <em class="fa fa-refresh mr-2"></em> Empezar de nuevo
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        <!-- DWV -->
+      </header>
     </div>
 
-    <script
-      src="https://code.jquery.com/jquery-3.6.0.min.js"
-      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-      crossorigin="anonymous"
-    ></script>
-    <script>
-      src =
-        "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js";
-    </script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dwv-v0.30.8.min.js') }}"></script>
     <script>
       /*  ==========================================
-          SHOW UPLOADED IMAGE AND UPLOAD IT 
+          SHOW UPLOADED IMAGE AND UPLOAD IT
         * ========================================== */
+
+      var app;
       function readURL(input) {
         if (input.files && input.files[0]) {
-          var reader = new FileReader();
-
-          reader.onload = function (e) {
-            $("#imageResult").attr("src", e.target.result);
-          };
-          reader.readAsDataURL(input.files[0]);
+          app.reset();
+          app.init({
+            dataViewConfigs: { "*": [{ divId: "layerGroup0" }] },
+          });
+          app.loadFiles(input.files);
         }
       }
 
       $(function () {
         $("#upload").on("change", function () {
           $("#alert_banner").hide();
+          $(".image-area").addClass("hide-bg");
           readURL(input);
         });
       });
 
       $(document).ready(function (e) {
-        var base_url = "http://127.0.0.1:5000";
+        app = new dwv.App();
+        app.init({
+          dataViewConfigs: { "*": [{ divId: "layerGroup0" }] },
+        });
+        var base_url = "{{ url_for('upload_file') }}";
+        $("#refresh_button").on("click", function () {
+          window.location.reload();
+        });
         $("#submit_button").on("click", function () {
           $("#alert_banner").hide();
           $("#loader_spiner").show();
@@ -158,7 +183,7 @@
           var form_data = new FormData();
           form_data.append("file", file_data);
           $.ajax({
-            url: base_url + "/upload",
+            url: base_url,
             dataType: "text",
             cache: false,
             contentType: false,
@@ -166,17 +191,29 @@
             data: form_data,
             type: "post",
             success: function (response) {
-              $("#imageResult").prop("src", response);
+              $("#notPreview").hide();
+              app.reset();
+              app.init({
+                dataViewConfigs: { "*": [{ divId: "layerGroup0" }] },
+              });
+              urltoFile(response, "result.png", "image/png").then(function (
+                file
+              ) {
+                app.loadFiles([file]);
+              });
+
               $("#download_link").prop("href", response);
               $("#loader_spiner").hide();
               $("#upload_image_container").hide();
               $("#submit_button").hide();
               $("#download_button").show();
+              $("#refresh_button").show();
             },
             error: function (response) {
               $("#alert_banner").html(response.responseText);
               $("#loader_spiner").hide();
               $("#alert_banner").show();
+              $("#notPreview").hide();
             },
           });
         });
@@ -194,6 +231,16 @@
         var fileName = input.files[0].name;
         infoArea.textContent = "File name: " + fileName;
       }
+
+      function urltoFile(url, filename, mimeType) {
+        return fetch(url)
+          .then(function (res) {
+            return res.arrayBuffer();
+          })
+          .then(function (buf) {
+            return new File([buf], filename, { type: mimeType });
+          });
+      }
     </script>
     <style>
       /*
@@ -207,7 +254,10 @@
         opacity: 0;
       }
 
-      a:visited, a:hover, a:active, a:focus {
+      a:visited,
+      a:hover,
+      a:active,
+      a:focus {
         text-decoration: none !important;
         outline: none !important;
       }
@@ -221,8 +271,15 @@
 
       .image-area {
         border: 2px dashed rgba(255, 255, 255, 0.7);
-        padding: 1rem;
         position: relative;
+        background-image: url("{{ url_for('static', filename='images/preview.svg') }}");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .image-area.hide-bg {
+        background-image: none;
       }
 
       .image-area::before {
@@ -243,20 +300,27 @@
         max-height: 50vh;
       }
 
-      /*
-        *
-        * ==========================================
-        * FOR DEMO PURPOSES
-        * ==========================================
-        *
-        */
       body {
         min-height: 100vh;
         background-color: #757f9a;
         background-image: linear-gradient(147deg, #757f9a 0%, #d7dde8 100%);
       }
 
-      /*
+      #dwv {
+        height: 65vh;
+      }
+
+      .layerGroup {
+        position: relative;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        height: 100%;
+      }
+      .layer {
+        position: absolute;
+        pointer-events: none;
+      }
     </style>
   </body>
 </html>

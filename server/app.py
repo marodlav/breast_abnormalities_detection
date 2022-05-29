@@ -10,9 +10,9 @@ from process_image import process
 from detect.detect import run
 from aux_functions.aux_functions import change_extension, delete_file, get_extension
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__),"image_uploads")
-RESULT_FOLDER = os.path.join(os.path.dirname(__file__),"image_results")
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "dcm"}
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "image_uploads")
+RESULT_FOLDER = os.path.join(os.path.dirname(__file__), "image_results")
+ALLOWED_EXTENSIONS = {"png", "dcm"}
 
 # APP SERVER
 app = flask.Flask(__name__)
@@ -67,12 +67,14 @@ def process_image(upload_file_path, result_file_path):
     # The result image need to be storage on the "results" folder
     # In the meantime, we use a subprocess call to copy the uploaded image
     # to the results folder with the same name and extension
-    
+
     if get_extension(upload_file_path) == "dcm":
         result_file_path = change_extension(result_file_path)
 
-    process_img, pad_original_image, img_original_shape = process(upload_file_path)
-    exit_code = run(process_img, result_file_path, pad_original_image, img_original_shape)
+    process_img, pad_original_image, img_original_shape = process(
+        upload_file_path)
+    exit_code = run(process_img, result_file_path,
+                    pad_original_image, img_original_shape)
 
     return exit_code, result_file_path
 
@@ -106,7 +108,8 @@ def upload_file():
 
     ################# YOLOV5 MAGIG ####################################
 
-    exit_code, result_file_path = process_image(upload_file_path, result_file_path)
+    exit_code, result_file_path = process_image(
+        upload_file_path, result_file_path)
     if exit_code != 0:  # Exit with code ! = 0 means error on command exectuion
         print(errors.ERROR_PROCESSING)
         return errors.ERROR_PROCESSING, 400
@@ -119,3 +122,8 @@ def upload_file():
         return response
     else:
         return errors.ERROR_PROCESSING, 400
+
+
+# Server Configuration
+port = int(os.environ.get("PORT", 8888))
+app.run(host='0.0.0.0', port=port)

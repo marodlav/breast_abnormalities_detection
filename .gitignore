@@ -1,5 +1,7 @@
-image_results/
-image_iploads/
+server/image_results/*
+!server/image_results/.gitkeep
+server/image_uploads/*
+!server/image_uploads/.gitkeep
 *.png
 *dcm
 __pycache__/
